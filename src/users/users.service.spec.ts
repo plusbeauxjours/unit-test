@@ -7,6 +7,7 @@ import { JwtService } from 'src/jwt/jwt.service';
 import { MailService } from 'src/mail/mail.service';
 import { UserService } from 'src/users/users.service';
 import { Verification } from 'src/users/entities/verification.entity';
+import { Repository } from 'typeorm';
 
 const mockRepository = {
   findOne: jest.fn(),
@@ -23,8 +24,11 @@ const mockMailService = {
   sendVerificationEmail: jest.fn(),
 };
 
+type MockRepository<T> = Partial<Record<keyof Repository<T>, jest.Mock>>;
+
 describe('UserService', () => {
   let service: UserService;
+  let usersRepository: MockRepository<User>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -49,10 +53,15 @@ describe('UserService', () => {
       ],
     }).compile();
     service = module.get<UserService>(UserService);
+    usersRepository = module.get(getRepositoryToken(User));
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('createAccount', () => {
+    it('should fail if user exists', () => {});
   });
 
   it.todo('createAccount');
